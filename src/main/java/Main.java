@@ -7,9 +7,8 @@ import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import discord4j.rest.util.Color;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.security.GeneralSecurityException;
 
 public class Main {
 
@@ -44,6 +43,37 @@ public class Main {
                 channel.createMessage(MessageCreateSpec.builder()
                         .content("Es una patata")
                         .addFile("patata.jpeg", fileAsInputStream)
+                        .addEmbed(embed)
+                        .build()).subscribe();
+            }
+            /* Aquí es donde empieza la parte del código en la que llamamos al método correspondiente para poder
+            * interactuar con la API de Google Drive*/
+
+            if (message.getContent().startsWith("!drive")){
+                /*Con este condicional hacemos que con ese mensaje recibido conecte con la API de Drive usando los
+                métodos que declaramos en el otro fichero para luego meter el archivo en un embed y sacarlo por pantalla*/
+                try {
+                    DriveQuickstart.drive();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (GeneralSecurityException e) {
+                    e.printStackTrace();
+                }
+                EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                        .color(Color.GREEN)
+                        .title("Ejemplo")
+                        .image("attachment://ayuda.jpg")
+                        .build();
+
+                InputStream fileAsInputStream = null;
+                try {
+                    fileAsInputStream = new FileInputStream("ayuda.jpg");
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                channel.createMessage(MessageCreateSpec.builder()
+                        .content("Menuda patata hermano")
+                        .addFile("auxiliar.jpg", fileAsInputStream)
                         .addEmbed(embed)
                         .build()).subscribe();
             }
